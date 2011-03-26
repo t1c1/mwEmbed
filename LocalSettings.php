@@ -28,7 +28,7 @@ $wgScriptCacheDirectory = $kConf->get('cache_root_path') . 'html5/' . $wgKaltura
 $wgResourceLoaderUrl = $wgKalturaServiceUrl . '/html5/html5lib/v' . $wgKalturaVersion . '/ResourceLoader.php';
 
 // Set debug for true (testing only)
-$wgEnableScriptDebug = true;
+$wgEnableScriptDebug = false;
 
 // This will tell the library to use Iframe Rewrite Method
 $wgKalturaIframeRewrite = 'true';

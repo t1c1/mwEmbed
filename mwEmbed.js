@@ -2668,7 +2668,7 @@ if( mw.isStaticPackge() && !window.jQuery ){
 if( window.jQuery ){
 	if( ! mw.versionIsAtLeast( '1.4.2', jQuery.fn.jquery ) ){
 		if( window.console && window.console.log ) {
-			console.log( 'Error Kaltura HTML5 requires jQuery 1.4 or above' );
+			console.log( 'Error mwEmbed requires jQuery 1.4 or above' );
 		}
 	}
 	var dollarFlag = false;
@@ -2993,13 +2993,10 @@ if( window.jQuery ){
   //ins(document.getElementsByTagName('head')[0], createEl('style'));
   //var sheet = document.styleSheets[document.styleSheets.length-1];
   var sheet = (function() {
-		var style = document.createElement('style');
-		style['title'] = 'spinjs';	
-		document.getElementsByTagName('head')[0].appendChild(style);  
-		if (!window.createPopup) { /* For Safari */  
-		   style.appendChild(document.createTextNode(''));  
-		} 
-		return document.styleSheets[document.styleSheets.length - 1]; 
+    ins(document.getElementsByTagName('head')[0], createEl('style', {title: 'spinjs'}));
+    for (var i=0, sheets=document.styleSheets; i < sheets.length; i++) {
+      if (sheets[i].title == 'spinjs') return sheets[i];
+    }
   })();
 
   /**

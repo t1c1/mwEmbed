@@ -377,8 +377,6 @@
 					}
 				break;
 			}
-			// look for a plugin based config: 
-			return embedPlayer.getKalturaConfig( objectPath[0], objectPath[1]);
 			// nothing found ( returns undefined ) 
 		},
 		evaluateStringFunction: function( functionName, value ){
@@ -537,6 +535,7 @@
 					});
 					break;	
 				case 'changeMedia':
+					// apparently change media is the same as playerReady
 					b( 'playerReady', function( event ){
 						callback({ 'entryId' : embedPlayer.kentryid }, embedPlayer.id );
 					});
@@ -600,13 +599,7 @@
 					mw.log( "Warning: kdp event: " + eventName + " does not have an html5 mapping" );
 					break;
 
-				case 'freePreviewEnd':
-					b('KalturaSupport_FreePreviewEnd');
-					break;
-				/** 
-				 * For closedCaption plguin
-				 *  TODO move to mw.KTimedText.js 
-				 */
+				/* For closedCaption plguin */
 				case 'ccDataLoaded':
 					b('KalturaSupport_ccDataLoaded');
 					break;

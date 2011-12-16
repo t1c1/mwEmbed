@@ -140,10 +140,10 @@ class kalturaIframe {
 		// check if we have iframeSize paramater:
 		if( isset( $_GET[ 'iframeSize' ] ) ){
 			list( $width, $height ) = explode( 'x',  $_GET[ 'iframeSize' ]);
-			$width = ( strpos($width, '%') === false ) ? intval( $width ) . 'px' : $width;
-			$height = ( strpos($height, '%') === false ) ? intval( $height ) . 'px' : $height;
+			$width = intval( $width );
+			$height = intval( $height );
 		}		
-		return "width:{$width};height:{$height};";
+		return "width:{$width}px;height:{$height}px;";
 	}
 	private function getPlaylistPlayerSizeCss(){
 		$width = 400;
@@ -154,22 +154,28 @@ class kalturaIframe {
 			$iframeWidth = intval( $iframeWidth );
 			$iframeHeight = intval( $iframeHeight );
 			
-			$includeInLayout = $this->getResultObject()->getPlayerConfig('playlist', 'includeInLayout');
-			$playlistHolder = $this->getResultObject()->getPlayerConfig('playlistHolder');
-			
-			// Hide list if includeInLayout is false
-			if( $includeInLayout === false ) {
-				$width = $iframeWidth;
-				$height = $iframeHeight;
-			} else {
-				if( $playlistHolder ) {
-					if( isset($playlistHolder['width']) && $playlistHolder['width'] != '100%' ) {
-						$width = $iframeWidth - intval( $playlistHolder['width'] );
-						$height = $iframeHeight;
-					}
-					if( isset($playlistHolder['height']) && $playlistHolder['height'] != '100%' ) {
-						$height = $iframeHeight - intval( $playlistHolder['height'] );
+			$xml = $this->getResultObject()->getUiConfXML();
+			// check for playlist.includeInLayout property and set to full size:
+			$result = $xml->xpath("//*[@key='playlist.includeInLayout']" );
+			if( isset( $result[0] ) ){
+				foreach ( $result[0]->attributes() as $key => $value ) {
+					if( $key == 'value' && $value == "false" ){
 						$width = $iframeWidth;
+						$height = 	$iframeHeight;						
+					}
+				}
+			} else {
+				$result = $xml->xpath("//*[@id='playlistHolder']");
+				if( isset( $result[0] ) ){
+					foreach ( $result[0]->attributes() as $key => $value ) {
+						if( $key == 'width' && $value != '100%' ){
+							$width = $iframeWidth - intval( $value );
+							$height = $iframeHeight;
+						}
+						if( $key == 'height' && $value != '100%' ){
+							$height = $iframeHeight - intval( $value );
+							$width = $iframeWidth;
+						}
 					}
 				}
 			}

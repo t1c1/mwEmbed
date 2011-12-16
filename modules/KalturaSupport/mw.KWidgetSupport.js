@@ -37,29 +37,13 @@ mw.KWidgetSupport.prototype = {
 			// Add Kaltura iframe share support:
 			$( embedPlayer ).bind( 'getShareIframeSrc', function( event, callback ){
 				var iframeUrl = mw.getMwEmbedPath() + 'mwEmbedFrame.php';
-				iframeUrl +='/wid/' + embedPlayer.kwidgetid +
+				iframeUrl +='/wid/_' + embedPlayer.kwidgetid +
 				'/uiconf_id/' + embedPlayer.kuiconfid +
 				'/entry_id/' + embedPlayer.kentryid + '/';
 				// return the iframeUrl via the callback: 
 				callback( iframeUrl );
 			});
 		});
-		// Ads have to communicate with parent iframe to support companion ads.
-		$( mw ).bind( 'AddIframePlayerBindings', function( event, exportedBindings){
-			// Add the updateCompanionTarget binding to bridge iframe
-			exportedBindings.push( 'KalturaSupport_RawUiConfReady' );
-		});
-		
-		// Do special binding for iframe
-		$( mw ).bind( 'newIframePlayerClientSide', function( event, playerProxy ){
-			// once the player is "ready" add kWidget methods: 
-			$( playerProxy ).bind('KalturaSupport_RawUiConfReady', function(event, rawUiConf ){
-				// Store the parsed uiConf in the playerProxy object:
-				playerProxy.$uiConf = $( rawUiConf );
-				_this.addPlayerMethods( playerProxy );
-			});
-		});
-		
 	},
 	rewriteTarget: function( widgetTarget, callback ){
 		var _this = this;
@@ -127,9 +111,6 @@ mw.KWidgetSupport.prototype = {
 		
 		// Check for uiConf	and attach it to the embedPlayer object:
 		if( playerData.uiConf ){
-			// Pass along the uiConf data
-			$( embedPlayer ).trigger( 'KalturaSupport_RawUiConfReady', [ playerData.uiConf ] );
-			
 			// Store the parsed uiConf in the embedPlayer object:
 			embedPlayer.$uiConf = $( playerData.uiConf );
 			
@@ -158,15 +139,14 @@ mw.KWidgetSupport.prototype = {
 				return ;
 			}
 			// Check for preview access control and add special onEnd binding: 
-			if( playerData.accessControl.previewLength != -1 ){
-				$( embedPlayer ).bind('postEnded.acpreview', function(){
-					mw.log( 'KWidgetSupport:: postEnded.acpreview>' );
-					$( embedPlayer ).trigger( 'KalturaSupport_FreePreviewEnd' );
+			if( playerData.accessControl.preview && playerData.accessControl.previewLength != -1 ){
+				$( embedPlayer ).bind('ended.acpreview', function(){
+					mw.log( 'KWidgetSupport:: ended.acpreview>' );
 					// Don't run normal onend action: 
 					embedPlayer.onDoneInterfaceFlag = false;
 					var closeAcMessage = function(){
-						$( embedPlayer ).unbind('postEnded.acpreview');
-						embedPlayer.controlBuilder.closeMenuOverlay();
+						$( embedPlayer ).unbind('ended.acpreview');
+						embedPlayer.stop();
 						embedPlayer.onClipDone();
 					};
 					// Display player dialog 
@@ -195,7 +175,7 @@ mw.KWidgetSupport.prototype = {
 		}
 		// Apply player Sources
 		if( playerData.flavors ){
-				_this.addFlavorSources( embedPlayer, playerData.flavors );
+			_this.addFlavorSources( embedPlayer, playerData.flavors );
 		}
 		
 		// Check for "image" mediaType ( 2 ) 
@@ -238,22 +218,6 @@ mw.KWidgetSupport.prototype = {
 				embedPlayer.kCuePoints = new mw.KCuePoints( embedPlayer );
 			}
 		}
-		// Add player methods: 
-		this.addPlayerMethods( embedPlayer );
-		
-		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
-		if( $(embedPlayer).data( 'uiConfXml' ) ){
-			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
-		}
-		// Check for playlist cache based 
-		if( playerData.playlistData ){
-			embedPlayer.kalturaPlaylistData = playerData.playlistData;
-		}
-		_this.handleUiConf( embedPlayer, callback );
-	},
-	addPlayerMethods: function( embedPlayer ){
-		var _this = this;
-		
 		embedPlayer.getRawKalturaConfig = function( confPrefix, attr ){
 			return _this.getRawPluginConfig( embedPlayer, confPrefix, attr );
 		};
@@ -266,10 +230,21 @@ mw.KWidgetSupport.prototype = {
 		embedPlayer.isPluginEnabled = function( pluginName ) {
 			return _this.getPluginConfig( embedPlayer, pluginName, 'plugin' );
 		};
+
 		// Add getFlashvars to embed player:
 		embedPlayer.getFlashvars = function() {
 			return $( embedPlayer ).data( 'flashvars' );
 		}
+		
+		// Check for payload based uiConf xml ( as loaded in the case of playlist with uiConf ) 
+		if( $(embedPlayer).data( 'uiConfXml' ) ){
+			embedPlayer.$uiConf = $( embedPlayer ).data( 'uiConfXml' );
+		}
+		// Check for playlist cache based 
+		if( playerData.playlistData ){
+			embedPlayer.kalturaPlaylistData = playerData.playlistData;
+		}
+		_this.handleUiConf( embedPlayer, callback );
 	},
 	/**
 	 * Handle the ui conf 

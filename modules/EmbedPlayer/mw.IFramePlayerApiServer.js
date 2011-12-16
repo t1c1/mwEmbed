@@ -76,11 +76,11 @@ mw.IFramePlayerApiServer.prototype = {
 				};
 				// Only wait 250ms for the handshake to come through otherwise continue: 
 				setTimeout(function(){
-					if( !proxyHandShakeComplete )
+					if( !proxyHandShakeComplete)
 						callback();
 				}, 250);
 				// Trigger the proxyReady event ( will add all the prePlayerProxy listeners 
-				mw.log( "IframePlayerApiServer::trigger: proxyReady" );
+				mw.log("IframePlayerApiServer::trigger: proxyReady");
 				$( embedPlayer ).trigger( 'proxyReady' );
 			});
 		}
@@ -199,7 +199,7 @@ mw.IFramePlayerApiServer.prototype = {
 	 * @param {string} event
 	 */
 	'hanldeMsg': function( event ){
-		//mw.log( 'IFramePlayerApiServer:: hanldeMsg: ' +  event.data );
+		mw.log( 'IFramePlayerApiServer:: hanldeMsg: ' +  event.data );
 		
 		// Check if the server should even be enabled 
 		if( !mw.getConfig( 'EmbedPlayer.EnableIframeApi' )){

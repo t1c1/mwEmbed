@@ -723,7 +723,18 @@ mw.PlayerControlBuilder.prototype = {
 		$interface.unbind();
 
 		var bindFirstPlay = false;		
-		_this.addRightClickBinding();
+		function addRightClickBinding(){
+			// check config:
+			if( mw.getConfig( 'EmbedPlayer.EnableRightClick') === false ){	
+				document.oncontextmenu= function(e){ return false; };
+				$(embedPlayer).mousedown(function(e){ 
+					if( e.button == 2 ) {
+						return false;
+					}
+				});
+			}
+		}
+		addRightClickBinding();
 		
 		
 		// Bind into play.ctrl namespace ( so we can unbind without affecting other play bindings )
@@ -738,10 +749,10 @@ mw.PlayerControlBuilder.prototype = {
 			var lastClickTime = 0;
 			var didDblClick = false;
 			// add right click binding again ( in case the player got swaped )
-			_this.addRightClickBinding()
+			addRightClickBinding()
 			
 			// Remove parent dbl click ( so we can handle play clicks )
-			$( embedPlayer ).unbind( "click.onplayer" ).bind( "click.onplayer", function() {
+			$( embedPlayer ).unbind("click.onplayer").bind('click.onplayer', function() {
 				// Don't bind anything if native controls displayed:
 				if( embedPlayer.useNativePlayerControls() ) {
 					return ;
@@ -869,18 +880,7 @@ mw.PlayerControlBuilder.prototype = {
 		mw.log('trigger::addControlBindingsEvent');
 		$( embedPlayer ).trigger( 'addControlBindingsEvent');
 	},
-	addRightClickBinding: function(){
-		var embedPlayer = this.embedPlayer;
-		// check config:
-		if( mw.getConfig( 'EmbedPlayer.EnableRightClick') === false ){	
-			document.oncontextmenu= function(e){ return false; };
-			$(embedPlayer).mousedown(function(e){ 
-				if( e.button == 2 ) {
-					return false;
-				}
-			});
-		}
-	},
+
 	/**
 	* Hide the control bar.
 	*/
@@ -2121,6 +2121,7 @@ mw.PlayerControlBuilder.prototype = {
 						$playHead.slider( "option", "disabled", false);
 					}
 				}
+			
 			
 				var embedPlayer = ctrlObj.embedPlayer;
 				var _this = this;

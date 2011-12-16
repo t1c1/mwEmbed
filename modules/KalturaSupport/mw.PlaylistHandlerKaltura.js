@@ -264,24 +264,35 @@ mw.PlaylistHandlerKaltura.prototype = {
 	getClipList: function(){
 		return this.clipList;
 	},
+	loadingEntry: null,
 	playClip: function( embedPlayer, clipIndex, callback ){
-		// Check if entry id already matches:
-		if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
-			embedPlayer.play();
-			return ;
-		}		
-		// listen for change media done
-		var bindName = 'onChangeMediaDone' + this.bindPostFix;
-		$( embedPlayer).unbind( bindName ).bind( bindName, function(){
-			embedPlayer.play();
-			if( callback )
-				callback();
-		});
-		mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
-		// Use internal changeMedia call to issue all relevant events
-		embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );
-		// Update the playlist data selectedIndex
-		embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
+	        var _this = this;
+	        // Check if entry id already matches ( and is loaded )
+	        if( embedPlayer.kentryid == this.getClip( clipIndex ).id ){
+	            if( this.loadingEntry ){
+	                mw.log("Error: PlaylistHandlerKaltura possible double playClip request");
+	            }else {
+	                embedPlayer.play();
+	            }
+	            return ;
+	        }   
+	        // update the loadingEntry flag:
+	        this.loadingEntry = this.getClip( clipIndex ).id;
+	       
+	        // Listen for change media done
+	        var bindName = 'onChangeMediaDone' + this.bindPostFix;
+	        $( embedPlayer).unbind( bindName ).bind( bindName, function(){
+	            _this.loadingEntry = false;
+	            embedPlayer.play();
+	            if( callback ){
+	                callback();
+	            }
+	        });
+	        mw.log("PlaylistHandlerKaltura::playClip::changeMedia entryId: " + this.getClip( clipIndex ).id);
+	        // Use internal changeMedia call to issue all relevant events
+	        embedPlayer.sendNotification( "changeMedia", { 'entryId' : this.getClip( clipIndex ).id } );
+	        // Update the playlist data selectedIndex
+	        embedPlayer.kalturaPlaylistData.selectedIndex = clipIndex;
 	},
 	drawEmbedPlayer: function( clipIndex, callback){
 		var _this = this;
@@ -333,7 +344,6 @@ mw.PlaylistHandlerKaltura.prototype = {
 		$( embedPlayer ).unbind( this.bindPostFix );
 		// add the binding: 
 		$( embedPlayer ).bind( 'Kaltura_SetKDPAttribute' + this.bindPostFix, function( event, componentName, property, value ){
-			mw.log("PlaylistHandlerKaltura::Kaltura_SetKDPAttribute:" + property + ' value:' + value);
 			switch( componentName ){
 				case "playlistAPI.dataProvider":
 					_this.doDataProviderAction( property, value );

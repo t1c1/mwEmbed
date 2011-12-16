@@ -50,10 +50,9 @@ class KalturaResultObject {
 	var $playerConfig = array();
 
 	function __construct( $clientTag = 'php'){
+		$this->clientTag = $clientTag;
 		//parse input:
 		$this->parseRequest();
-		// set client tag with cache_st
-		$this->clientTag = $clientTag . ',cache_st: ' . $this->urlParameters['cache_st'];
 		// load the request object:
 		$this->getResultObject();
 	}
@@ -90,7 +89,7 @@ class KalturaResultObject {
 	function getError() {
 		return $this->error;
 	}
-	public function getPlayerConfig( $confPrefix = false, $attr = false ) {
+	function getPlayerConfig( $confPrefix = false, $attr = false ) {
 		if( ! $this->playerConfig ) {
 			$this->setupPlayerConfig();
 		}
@@ -439,7 +438,7 @@ class KalturaResultObject {
 
 		// Get all plugins elements
 		if( $this->uiConfFile ) {
-			$pluginsXml = $this->getUiConfXML()->xpath("*//*[@id]");
+			$pluginsXml = $this->getUiConfXML()->xpath("*//Plugin");
 			for( $i=0; $i < count($pluginsXml); $i++ ) {
 				$pluginId = (string) $pluginsXml[ $i ]->attributes()->id;
 				$plugins[ $pluginId ] = array(
@@ -480,7 +479,7 @@ class KalturaResultObject {
 				$vars[ $key ] = $this->formatString($value);
 			}
 		}
-		
+
 		// Set Plugin attributes from uiVars/flashVars to our plugins array
 		foreach( $vars as $key => $value ) {
 			// If this is not a plugin setting, continue
@@ -535,7 +534,7 @@ class KalturaResultObject {
 	
 	// Load the Kaltura library and grab the most compatible flavor
 	public function getSources(){
-		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive, $wgHTTPProtocol;
+		global $wgKalturaServiceUrl, $wgKalturaUseAppleAdaptive;
 		
 		// Check the access control before returning any source urls
 		if( !$this->isAccessControlAllowed() ) {
@@ -586,7 +585,7 @@ class KalturaResultObject {
 			}
 			// If we have apple http steaming then use it for ipad & iphone instead of regular flavors
 			if( strpos( $KalturaFlavorAsset->tags, 'applembr' ) !== false ) {
-				$assetUrl = $flavorUrl . '/format/applehttp/protocol/' . $wgHTTPProtocol . '/a.m3u8';
+				$assetUrl = $flavorUrl . '/format/applehttp/protocol/http/a.m3u8';
 
 				$sources['applembr'] = array(
 					'src' => $assetUrl,
@@ -609,7 +608,7 @@ class KalturaResultObject {
 			}
 			
 			// Else use normal 
-			$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/' . $wgHTTPProtocol;
+			$assetUrl = $flavorUrl . '/flavorId/' . $KalturaFlavorAsset->id . '/format/url/protocol/http';
 
 			// Add iPad Akamai flavor to iPad flavor Ids list
 			if( strpos( $KalturaFlavorAsset->tags, 'ipadnew' ) !== false ) {
@@ -675,12 +674,9 @@ class KalturaResultObject {
 		$ipadFlavors = trim($ipadFlavors, ",");
 		$iphoneFlavors = trim($iphoneFlavors, ",");
 
-		// Disable Apple adaptive for HTTPs
-		$wgKalturaUseAppleAdaptive = ($wgHTTPProtocol == 'https') ? false : true;
-
 		// Create iPad flavor for Akamai HTTP
 		if ( $ipadFlavors && $wgKalturaUseAppleAdaptive ){
-			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
+			$assetUrl = $flavorUrl . '/flavorIds/' . $ipadFlavors . '/format/applehttp/protocol/http';
 
 			$sources['ipadnew'] = array(
 				'src' => $assetUrl . '/a.m3u8',
@@ -692,7 +688,7 @@ class KalturaResultObject {
 		// Create iPhone flavor for Akamai HTTP
 		if ( $iphoneFlavors && $wgKalturaUseAppleAdaptive )
 		{
-			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/' . $wgHTTPProtocol;
+			$assetUrl = $flavorUrl . '/flavorIds/' . $iphoneFlavors . '/format/applehttp/protocol/http';
 
 			$sources['iphonenew'] = array(
 				'src' => $assetUrl . '/a.m3u8',

@@ -801,7 +801,6 @@ mw.EmbedPlayerNative = {
 			}
 		}
 		// update the playhead status
-		this.hidePlayerSpinner();
 		this.monitor();
 	},
 
@@ -809,12 +808,14 @@ mw.EmbedPlayerNative = {
 	* Handle the native paused event
 	*/
 	_onpause: function(){
-		var timeSincePlay =  Math.abs( this.absoluteStartPlayTime - new Date().getTime() );
-		mw.log( "EmbedPlayerNative:: OnPaused:: " +  this._propagateEvents + ' time since play: ' + timeSincePlay );
+		mw.log( "EmbedPlayerNative:: OnPaused:: " +  this._propagateEvents + ' time since play: '  +  Math.abs( this.absoluteStartPlayTime - new Date().getTime()  ) );
 		if(  this._propagateEvents && ! this.paused ){
 			// Only trigger parent pause if more than MonitorRate time has gone by.
-			// Some browsers trigger native pause events when they "play" or after a src swtich
-			if( timeSincePlay > mw.getConfig( 'EmbedPlayer.MonitorRate' ) ){
+			// Some browsers trigger queued native pause events when they "play" ( Firefox 7x )
+			if( this.absoluteStartPlayTime + mw.getConfig( 'EmbedPlayer.MonitorRate' ) 
+				 >
+				new Date().getTime() 
+			){
 				this.parent_pause();
 			}
 		}

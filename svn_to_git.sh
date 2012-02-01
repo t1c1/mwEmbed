@@ -44,7 +44,7 @@ git svn merge kaltura.org
 #echo "Master Branch"
 ls -alh
 
-## Branch Tracking
+## Branch Tracking TODO Check to see that git-svn fetch is up to date
 
 #echo "Setting up some tracking branches."
 git branch --track packager remotes/kaltura.org/packager
@@ -59,6 +59,7 @@ git branch -rd kaltura.org/svn_to_git
 rm -rf .git/svn/refs/remotes/kaltura.org/svn_to_git/
 rm -rf .git/svn/refs/remotes/kaltura.org/new_branch_name/
 git gc --prune=all
+git reset --hard HEAD
 
 #echo "Local Branches"
 git branch
@@ -72,7 +73,12 @@ cat .git/config
 git status
 
 #echo "attempting to maks evn_to_git branch"
-#git svn branch new_branch_name -m 'adding new branch' -d html5video/branches
-# checkout a local working branch to track the remote branch
-#     git checkout --track -b new_branch_name remotes/kaltura.org/new_branch_name
-# commit to your local working branch and then commit to kalorg svn with
+## TODO checkout unique branch
+git checkout -b git_svn_sync_latest
+git add authors.txt
+git add svn_to_git.sh
+git commit -m 'latest svn_to_git and authors added'
+#git checkout git_svn_sync
+#git merge git_svn_sync_latest
+#git branch -D git_svn_sync_latest
+#git svn dcommit

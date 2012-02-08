@@ -72,7 +72,7 @@ echo "Git Config:"
 cat .git/config
 git status
 
-#echo "attempting to maks evn_to_git branch"
+#echo "attempting to maks svn_to_git branch"
 ## TODO checkout unique branch
 git checkout -b git_svn_sync_latest
 git add authors.txt

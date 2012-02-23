@@ -1,1 +1,0 @@
-mw.log( "IframeHTML5js1 html5 iframe plugin FooBar");

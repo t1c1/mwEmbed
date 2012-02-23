@@ -61,6 +61,36 @@ rm -rf .git/svn/refs/remotes/kaltura.org/new_branch_name/
 git gc --prune=all
 git reset --hard HEAD
 
+## Setup release branch tracking
+git branch --track 1.3 remotes/kaltura.org/tags/dragonfly_v1.3a
+git branch --track 1.5 remotes/kaltura.org/tags/1.5
+git branch --track 1.6.0 remotes/kaltura.org/tags/1.6.0
+git branch --track 1.6.1 remotes/kaltura.org/tags/1.6.1
+git branch --track 1.6.2 remotes/kaltura.org/tags/1.6.2
+git branch --track 1.6.3 remotes/kaltura.org/tags/1.6.3
+
+## Setup new tracking repos for tagged releases with mwEmbed folders
+git svn init http://www.kaltura.org/kalorg/html5video/ --svn-remote=svn-1.6.4 --prefix=svn-1.6.4/ --trunk=tags/1.6.4/mwEmbed ;
+git svn init http://www.kaltura.org/kalorg/html5video/ --svn-remote=svn-1.6.5 --prefix=svn-1.6.5/ --trunk=tags/1.6.5/mwEmbed ;
+git svn init http://www.kaltura.org/kalorg/html5video/ --svn-remote=svn-1.6.6 --prefix=svn-1.6.6/ --trunk=tags/1.6.6/mwEmbed ;
+git svn init http://www.kaltura.org/kalorg/html5video/ --svn-remote=svn-1.6.7 --prefix=svn-1.6.7/ --trunk=tags/1.6.7/mwEmbed ;
+git svn init http://www.kaltura.org/kalorg/html5video/ --svn-remote=svn-1.6.8 --prefix=svn-1.6.8/ --trunk=tags/1.6.8/mwEmbed ;
+git svn init http://www.kaltura.org/kalorg/html5video/ --svn-remote=svn-1.6.9 --prefix=svn-1.6.9/ --trunk=tags/1.6.9/mwEmbed ;
+
+git svn fetch svn-1.6.4
+git svn fetch svn-1.6.5
+git svn fetch svn-1.6.6
+git svn fetch svn-1.6.7
+git svn fetch svn-1.6.8
+git svn fetch svn-1.6.9
+
+git branch --track 1.6.4 svn-1.6.4/trunk
+git branch --track 1.6.5 svn-1.6.5/trunk
+git branch --track 1.6.6 svn-1.6.6/trunk
+git branch --track 1.6.7 svn-1.6.7/trunk
+git branch --track 1.6.8 svn-1.6.8/trunk
+git branch --track 1.6.9 svn-1.6.9/trunk
+
 #echo "Local Branches"
 git branch
 

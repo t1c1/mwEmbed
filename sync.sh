@@ -23,3 +23,7 @@ git svn rebase
 #git svn dcommit # uncomment to push back to svn
 
 git push kaltura --all
+
+
+# Finish up by checking out the git_svn_sync branch so sync.sh is still available for cronsa
+git checkout git_svn_sync

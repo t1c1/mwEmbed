@@ -301,7 +301,7 @@ mw.DoubleClick.prototype = {
 		
 		// Initialize the ads manager. In case of ad playlist with a preroll,
 		// the preroll will start playing immediately.
-		_this.adsManager.init( _this.embedPlayer.getWidth(), _this.embedPlayer.getHeight(), google.ima.ViewMode.NORMAL);
+		_this.adsManager.init( _this.embedPlayer.width, _this.embedPlayer.height, google.ima.ViewMode.NORMAL);
 		_this.adsManager.setVolume( _this.embedPlayer.getPlayerElementVolume() );
 		// Start the ad playback. For video and overlay ads, this will
 		// start the ads. For automatic ad rules controller ads, this will be

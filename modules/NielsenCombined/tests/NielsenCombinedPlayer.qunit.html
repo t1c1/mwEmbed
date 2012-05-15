@@ -31,6 +31,7 @@ function jsKalturaPlayerTest( videoId ){
 			var playBeaconSent = false;
 			// look for play becaon:
 			$( player ).bind( 'NielsenCombined_DispatchEvent.play', function( event, args ){
+				$( player ).unbind( 'NielsenCombined_DispatchEvent.play' );
 				if( playBeaconSent ){
 					ok( false, "Error play beacon sent twice");
 				}
@@ -38,7 +39,6 @@ function jsKalturaPlayerTest( videoId ){
 				
 				equal( args[0], 15, "15 play argument" );
 				equal( args[2], "content", "passed content type" );
-				$( player ).unbind( 'NielsenCombined_DispatchEvent.play' );
 				start();
 				// Test pause after 5 seconds of play
 				setTimeout( function(){  
@@ -60,11 +60,13 @@ function jsKalturaPlayerTest( videoId ){
 			var pauseTime = null;
 			var pauseBeaconSent = false;
 			$( player ).bind( 'NielsenCombined_DispatchEvent.pause', function( event, args ){
+				$( player ).unbind( 'NielsenCombined_DispatchEvent.pause' );
+				
 				pauseBeaconSent = true;
 				equal( args[0], 6, "6 pause argument" );
 				pauseTime =  args[1];
 				equal( args[2], "content", "pause event has content" );
-				$( player ).unbind( 'NielsenCombined_DispatchEvent.pause' );
+				
 				
 				// Check for resume playback: 
 				$( player ).bind( 'NielsenCombined_DispatchEvent.resume', function( event, args){

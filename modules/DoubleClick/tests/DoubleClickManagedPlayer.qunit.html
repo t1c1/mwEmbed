@@ -12,15 +12,33 @@ function jsKalturaPlayerTest( videoId ){
 	var kdp = $('#' + videoId ).get(0);
 	
 	asyncTest("Ad started playback", function(){
+		window['onAdStart'] = function(){
+			// check that we are in sequence: 
+			equal( kdp.evaluate( '{sequenceProxy.isInSequence}' ), true, "Player in ad Sequence" );
+			start();
+			setTimeout(function(){
+				testAdPlaybackApi();
+			},1000);
+		}
 		
 		kalturaQunitWaitForPlayer(function(){
 			// listen for ad start:
-			
+			kdp.addJsListener( 'adStart', 'onAdStart' );
+					
 			// send a play request:
 			kdp.sendNotification('doPlay');
 		});
-		
 	});
+	
+	asyncTest("Test Ad playback API", function(){
+		
+		window['testAdPlaybackApi'] = function(){
+			kdp.addJsListener( 'doPause' );
+			// issue an inAd pause request.
+			kdp.sendNotification( 'doPause' );
+		}
+	});
+	
 }
 </script>
 <!-- qunit-kaltura must come after qunit-bootstrap.js and after mwEmbedLoader.php and after any jsCallbackReady stuff-->

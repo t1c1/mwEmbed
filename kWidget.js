@@ -1403,7 +1403,7 @@ var kWidget = {
 		return url;
 	},
 	/**
-	* TODO see about deprecating kGetAdditionalTargetCss. 
+	* TODO see about deprecating getAdditionalTargetCss. 
 	* When using Frameset that have iframe with video tag inside, the iframe is not positioned correctly. and you can't click on the controls.
 	* If order to fix that, we allow to hosting page to pass the following configuration:
 	* mw.setConfig('FramesetSupport.Enabled', true); - Disable HTML controls on iPad
@@ -1413,6 +1413,7 @@ var kWidget = {
 	getAdditionalTargetCss: function() {
 		var ua = navigator.userAgent;
 		if( mw.getConfig('FramesetSupport.Enabled') && kWidget.isIOS() && (ua.indexOf('OS 3') > 0 || ua.indexOf('OS 4') > 0) ) {
+			this.log( "getAdditionalTargetCss is deprecated, please apply css directly to player target div" );
 			return mw.getConfig('FramesetSupport.PlayerCssProperties') || {};
 		}
 		return {};

@@ -571,6 +571,8 @@
 			var iframeStyle = ( $( playerTarget ).attr('style') ) ? $( playerTarget ).attr('style') : '';
 			var iframeCss = { 'border': '0px' };
 			
+			// NOTE additional Target css is need to work around iOS 3 and 4 fixed layout but with iframe sets.
+			// in the future implementations should apply css directly to rewrite target
 			$.extend(iframeCss, kWidget.getAdditionalTargetCss());
 			
 			var $iframe = $('<iframe />')

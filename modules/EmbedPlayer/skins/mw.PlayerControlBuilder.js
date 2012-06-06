@@ -983,6 +983,15 @@ mw.PlayerControlBuilder.prototype = {
 			_this.removePlayerClickBindings();
 		});
 		
+		$( embedPlayer ).bind( 'loadedLiveStream' + this.bindPostfix, function(){
+			// remove playhead:
+			var $playHead = _this.embedPlayer.$interface.find( ".play_head" );
+			if( $playHead.length ){
+				$playHead.remove();
+			}
+			_this.setStatus( gM('mwe-embedplayer-live') );
+		});
+		
 		
 		var bindSpaceUp = function(){
 			$(window).bind('keyup' + _this.bindPostfix, function(e) {

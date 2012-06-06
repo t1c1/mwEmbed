@@ -61,7 +61,6 @@ mw.KWidgetSupport.prototype = {
 				_this.addPlayerMethods( playerProxy );
 			});
 		});
-		
 	},
 	/**
 	 * Add player bindings 

@@ -2329,7 +2329,7 @@ mw.EmbedPlayer.prototype = {
 	 */
 	updatePlayheadStatus: function(){
 		var _this = this;
-		if ( this.currentTime >= 0 && this.duration ) {
+		if ( this.currentTime >= 0 && isFinite( this.duration ) ) {
 			if ( !this.userSlide && !this.seeking ) {
 				if ( parseInt( this.startOffset ) != 0 ) {
 					// If start offset include that calculation
@@ -2350,16 +2350,19 @@ mw.EmbedPlayer.prototype = {
 				this.onClipDone();
 			}
 		} else {
-			// Media lacks duration just show end time
+			// Media lacks duration or is "live" just show end time
 			if ( this.isStopped() ) {
 				this.controlBuilder.setStatus( this.getTimeRange() );
 			} else if ( this.paused ) {
 				this.controlBuilder.setStatus( gM( 'mwe-embedplayer-paused' ) );
 			} else if ( this.isPlaying() ) {
-				if ( this.currentTime && ! this.duration )
+				if ( this.duration == "Infinity" ){
+					this.controlBuilder.setStatus( gM('mwe-embedplayer-live') );
+				} else if ( this.currentTime && ! this.duration ){
 					this.controlBuilder.setStatus( mw.seconds2npt( this.currentTime ) + ' /' );
-				else
+				} else {
 					this.controlBuilder.setStatus( " - - - " );
+				}
 			} else {
 				this.controlBuilder.setStatus( this.getTimeRange() );
 			}

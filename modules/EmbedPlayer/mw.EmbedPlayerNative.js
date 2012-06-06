@@ -1066,9 +1066,15 @@ mw.EmbedPlayerNative = {
 			this.controlBuilder.syncPlayerSize();
 		}
 		
-		if ( this.playerElement && !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
+		if ( !isNaN( this.playerElement.duration ) && isFinite( this.playerElement.duration) ) {
 			mw.log( 'EmbedPlayerNative :onloadedmetadata metadata ready Update duration:' + this.playerElement.duration + ' old dur: ' + this.getDuration() );
 			this.duration = this.playerElement.duration;
+		}
+		// Check if the duration is Infinity ( live stream ) 
+		if ( this.playerElement.duration == 'Infinity' ) {
+			mw.log( "EmbedPlayerNative:: onloadedmetadata: LIVE stream" );
+			$( this ).trigger( 'loadedLiveStream' );
+			this.duration = 'Infinity';
 		}
 
 		// Check if in "playing" state and we are _propagateEvents events and continue to playback: 
@@ -1077,7 +1083,7 @@ mw.EmbedPlayerNative = {
 		}
 		
 		//Fire "onLoaded" flags if set
-		if( typeof this.onLoadedCallback == 'function' ) {
+		if( $.isFunction( this.onLoadedCallback ) ) {
 			this.onLoadedCallback();
 		}
 
